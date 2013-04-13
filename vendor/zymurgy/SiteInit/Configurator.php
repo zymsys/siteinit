@@ -44,4 +44,20 @@ class Configurator
             file_get_contents(getenv('HOME') . '/.siteinit/apache.conf')
         );
     }
+
+    public function buildSetupSQL()
+    {
+        $sql = $this->fillTemplate(
+            file_get_contents(getenv('HOME') . '/.siteinit/mysql.sql')
+        );
+        $lines = explode(";", $sql);
+        $stripped = array();
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (!empty($line)) {
+                $stripped[] = $line;
+            }
+        }
+        return $stripped;
+    }
 }

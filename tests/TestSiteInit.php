@@ -23,4 +23,17 @@ class TestSiteInit extends PHPUnit_Framework_TestCase
         $this->assertContains('SetEnv DB_PASSWORD "password"', $configuration,
             "Apache config for the password");
     }
+
+    public function testMySQLConfig()
+    {
+        $configurator = new zymurgy\SiteInit\Configurator();
+        $sql = $configurator->buildSetupSQL();
+        $this->assertContains("create database 'user'", $sql,
+            "SQL creates database");
+        $this->assertContains("grant all on user.* to 'user'@'localhost' " .
+            "identified by 'password'", $sql,
+            "SQL grants rights");
+    }
+
+
 }
