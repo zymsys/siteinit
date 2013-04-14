@@ -8,7 +8,7 @@ putenv('HOME=' . __DIR__);
 
 require_once('../bootstrap.php');
 
-class TestSiteInit extends PHPUnit_Framework_TestCase
+class ConfiguratorTest extends PHPUnit_Framework_TestCase
 {
     public function testBuildApacheConfig()
     {
@@ -66,5 +66,14 @@ class TestSiteInit extends PHPUnit_Framework_TestCase
             "Hosts file contains IPV6 entry");
     }
 
-
+    public function testMustRunAsRootSuccess()
+    {
+        $phpAPI = new zymurgy\PHPAPI\Repository(true);
+        $phpAPI->getPOSIX()->mockSetReturn('posix_getuid', 0);
+        $worker = new zymurgy\SiteInit\Worker($phpAPI);
+        $worker->writeSite();
+        $log = $phpAPI->getFilesystem()->mockGetLog();
+        $this->assertTrue(isset($log['fopen']),
+            "Files were opened when writing the site");
+    }
 }

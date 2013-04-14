@@ -1,5 +1,5 @@
 <?php
 
 require_once 'SplClassLoader.php';
-$classLoader = new SplClassLoader(null, __DIR__ . '/vendor');
+$classLoader = new SplClassLoader(null, __DIR__ . '/classes');
 $classLoader->register();
