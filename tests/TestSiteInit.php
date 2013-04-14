@@ -37,12 +37,12 @@ class TestSiteInit extends PHPUnit_Framework_TestCase
 
     public function testSkeleton()
     {
-        $command = "rm -rf " . getenv('HOME') . "/.siteinit/Sites/host";
-        system($command);
-        $configurator = new zymurgy\SiteInit\Configurator();
-        $configurator->deploySkeleton();
+        system("rm -rf " . getenv('HOME') . "/.siteinit/Sites/host");
+        system("chmod 600 .siteinit/skeleton/test.php");
         $testFile = '.siteinit/Sites/host/test.php';
         $nestedFile = '.siteinit/Sites/host/folder/nested.php';
+        $configurator = new zymurgy\SiteInit\Configurator();
+        $configurator->deploySkeleton();
         $this->assertTrue(file_exists($testFile), "Test file exists");
         $this->assertTrue(file_exists($nestedFile), "Nested file exists");
         $testContents = file_get_contents($testFile);
@@ -51,6 +51,9 @@ class TestSiteInit extends PHPUnit_Framework_TestCase
             "Template substitutions work in test file.");
         $this->assertContains("\$password = 'password';", $nestedContents,
             "Template substitutions work in nested file.");
+        $meta = stat($testFile);
+        $this->assertEquals(0600, $meta['mode'] & 0777,
+            "Deployed file matches source permissions");
     }
 
 

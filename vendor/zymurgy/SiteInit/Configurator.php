@@ -92,6 +92,8 @@ class Configurator
             mkdir($destinationFolder, 0755, true);
         }
         $contents = file_get_contents($filename);
+        $meta = stat($filename);
         file_put_contents($destination, $this->fillTemplate($contents));
+        chmod($destination, $meta['mode']);
     }
 }
