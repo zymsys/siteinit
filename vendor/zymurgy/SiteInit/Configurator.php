@@ -96,4 +96,10 @@ class Configurator
         file_put_contents($destination, $this->fillTemplate($contents));
         chmod($destination, $meta['mode']);
     }
+
+    public function buildHosts()
+    {
+        $template = file_get_contents(getenv('HOME') . '/.siteinit/hosts');
+        return $this->fillTemplate($template);
+    }
 }

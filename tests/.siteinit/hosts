@@ -1,0 +1,2 @@
+127.0.0.1       {{host}}.local
+fe80::1%lo0     {{host}}.local

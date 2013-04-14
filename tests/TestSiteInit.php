@@ -56,5 +56,15 @@ class TestSiteInit extends PHPUnit_Framework_TestCase
             "Deployed file matches source permissions");
     }
 
+    public function testHosts()
+    {
+        $configurator = new zymurgy\SiteInit\Configurator();
+        $hosts = $configurator->buildHosts();
+        $this->assertContains("127.0.0.1       host.local", $hosts,
+            "Hosts file contains IPV4 entry");
+        $this->assertContains("fe80::1%lo0     host.local", $hosts,
+            "Hosts file contains IPV6 entry");
+    }
+
 
 }
