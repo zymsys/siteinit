@@ -18,7 +18,11 @@ class Base
 
     protected function getMockReturn($method, $arguments)
     {
-        return $this->_returns[$method];
+        $value = $this->_returns[$method];
+        if ($value instanceof \zymurgy\PHPAPI\MockReturnSet) {
+            return $value->get($arguments);
+        }
+        return $value;
     }
 
     public function mockGetLog()

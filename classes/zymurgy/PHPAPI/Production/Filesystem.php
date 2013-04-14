@@ -8,4 +8,9 @@ class Filesystem implements \zymurgy\PHPAPI\IFilesystem
     {
         return \fopen($filename, $mode, $use_include_path, $context);
     }
+
+    function fgets($handle, $length = null)
+    {
+        return \fgets($handle, $length);
+    }
 }

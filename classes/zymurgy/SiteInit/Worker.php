@@ -16,6 +16,7 @@ class Worker
     public function writeSite()
     {
         $this->checkIsRoot();
+        $this->populateMissingEnvironment();
         $this->factory->getFilesystem()->fopen('/etc/hosts','a');
     }
 
@@ -26,5 +27,28 @@ class Worker
                 "siteinit must be run as root."
             );
         }
+    }
+
+    private function populateMissingEnvironment()
+    {
+        if (!getenv('TITLE')) {
+            $this->populateEnvironmentFromInput('TITLE', "Title: ");
+        }
+        if (!getenv('HOSTNAME')) {
+            $this->populateEnvironmentFromInput('HOSTNAME', "Host: ");
+        }
+        if (!getenv('USERNAME')) {
+            $this->populateEnvironmentFromInput('USERNAME', "User: ");
+        }
+        if (!getenv('PASSWORD')) {
+            $this->populateEnvironmentFromInput('PASSWORD', "Password: ");
+        }
+    }
+
+    private function populateEnvironmentFromInput($variableName, $prompt)
+    {
+        echo $prompt;
+        $value = $this->factory->getFilesystem()->fgets(STDIN);
+        putenv($variableName . '=' . $value);
     }
 }

@@ -65,15 +65,4 @@ class ConfiguratorTest extends PHPUnit_Framework_TestCase
         $this->assertContains("fe80::1%lo0     host.local", $hosts,
             "Hosts file contains IPV6 entry");
     }
-
-    public function testMustRunAsRootSuccess()
-    {
-        $phpAPI = new zymurgy\PHPAPI\Repository(true);
-        $phpAPI->getPOSIX()->mockSetReturn('posix_getuid', 0);
-        $worker = new zymurgy\SiteInit\Worker($phpAPI);
-        $worker->writeSite();
-        $log = $phpAPI->getFilesystem()->mockGetLog();
-        $this->assertTrue(isset($log['fopen']),
-            "Files were opened when writing the site");
-    }
 }
