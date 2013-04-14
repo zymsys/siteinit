@@ -5,6 +5,7 @@ class Base
 {
     private $_returns = array();
     private $_log = array();
+    private $_files = array();
 
     public function mockSetReturn($functionName, $value)
     {
@@ -36,5 +37,18 @@ class Base
             $this->_log[$method] = array();
         }
         $this->_log[$method][] = $args;
+    }
+
+    public function mockGetFiles()
+    {
+        return $this->_files;
+    }
+
+    protected function mockGetFile($filename, $mode)
+    {
+        if (!isset($this->_files[$filename])) {
+            $this->_files[$filename] = new \zymurgy\PHPAPI\MockFileHandle($mode);
+        }
+        return $this->_files[$filename];
     }
 }

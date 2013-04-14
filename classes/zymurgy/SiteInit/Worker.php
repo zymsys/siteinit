@@ -17,6 +17,8 @@ class Worker
     {
         $this->checkIsRoot();
         $this->populateMissingEnvironment();
+        $configurator = new Configurator();
+        $this->writeApacheConfig($configurator);
         $this->factory->getFilesystem()->fopen('/etc/hosts','a');
     }
 
@@ -50,5 +52,14 @@ class Worker
         echo $prompt;
         $value = $this->factory->getFilesystem()->fgets(STDIN);
         putenv($variableName . '=' . $value);
+    }
+
+    private function writeApacheConfig(Configurator $configurator)
+    {
+        $this->factory->getFilesystem()->file_put_contents(
+            getenv('HOME') . '/.siteinit/vhosts/' .
+                getenv('HOSTNAME') . '.conf',
+            $configurator->buildApacheConfig()
+        );
     }
 }

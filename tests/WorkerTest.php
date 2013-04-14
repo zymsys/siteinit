@@ -1,6 +1,8 @@
 <?php
 require_once('../bootstrap.php');
 
+putenv('HOME=' . __DIR__);
+
 class WorkerTest extends PHPUnit_Framework_TestCase {
     public function testMustRunAsRootSuccess()
     {
@@ -63,4 +65,20 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expectedPassword, getenv('PASSWORD'),
             "Asks for and sets password");
     }
+
+    public function testWriteApacheConfig()
+    {
+        $phpAPI = new zymurgy\PHPAPI\Repository(true);
+        $phpAPI->getPOSIX()->mockSetReturn('posix_getuid', 0);
+        $worker = new zymurgy\SiteInit\Worker($phpAPI);
+        $worker->writeSite();
+        $fs = $phpAPI->getFilesystem()->mockGetFiles();
+        $filename = __DIR__ . '/.siteinit/vhosts/host.conf';
+        $this->assertTrue(isset($fs[$filename]),
+            "Worker created apache virtual host config");
+        //Not testing all contents since configurator tests test contents.
+        $this->assertContains('ServerName host.local', $fs[$filename]->contents,
+            "Apache config for server name");
+    }
+
 }

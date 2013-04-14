@@ -13,4 +13,19 @@ class Filesystem implements \zymurgy\PHPAPI\IFilesystem
     {
         return \fgets($handle, $length);
     }
+
+    function file_put_contents($filename, $data, $flags = null, $context = null)
+    {
+        return \file_put_contents($filename, $data, $flags, $context);
+    }
+
+    function fwrite($handle, $string, $length = null)
+    {
+        return \fwrite($handle, $string, $length);
+    }
+
+    function fclose($handle)
+    {
+        return \fclose($handle);
+    }
 }
