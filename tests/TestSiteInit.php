@@ -35,5 +35,23 @@ class TestSiteInit extends PHPUnit_Framework_TestCase
             "SQL grants rights");
     }
 
+    public function testSkeleton()
+    {
+        $command = "rm -rf " . getenv('HOME') . "/.siteinit/Sites/host";
+        system($command);
+        $configurator = new zymurgy\SiteInit\Configurator();
+        $configurator->deploySkeleton();
+        $testFile = '.siteinit/Sites/host/test.php';
+        $nestedFile = '.siteinit/Sites/host/folder/nested.php';
+        $this->assertTrue(file_exists($testFile), "Test file exists");
+        $this->assertTrue(file_exists($nestedFile), "Nested file exists");
+        $testContents = file_get_contents($testFile);
+        $nestedContents = file_get_contents($nestedFile);
+        $this->assertContains("\$userName = 'user';", $testContents,
+            "Template substitutions work in test file.");
+        $this->assertContains("\$password = 'password';", $nestedContents,
+            "Template substitutions work in nested file.");
+    }
+
 
 }

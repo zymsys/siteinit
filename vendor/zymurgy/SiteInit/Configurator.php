@@ -60,4 +60,38 @@ class Configurator
         }
         return $stripped;
     }
+
+    private function deploySkeletonPath($path)
+    {
+        $handle = opendir($path);
+        $commonLength = strlen(getenv('HOME') . '/.siteinit/skeleton');
+        while (($entry = readdir($handle)) !== false) {
+            if (($entry === '.') || ($entry === '..')) {
+                continue;
+            }
+            $filename = $path . '/' . $entry;
+            if (is_dir($filename)) {
+                $this->deploySkeletonPath($filename);
+            } else if (is_file($filename)) {
+                $destination = getenv('HOME') . '/.siteinit/Sites/' .
+                    getenv('HOSTNAME') . substr($filename, $commonLength);
+                $this->copyAndFillTemplateValues($filename, $destination);
+            }
+        }
+    }
+
+    public function deploySkeleton()
+    {
+        $this->deploySkeletonPath(getenv('HOME') . '/.siteinit/skeleton');
+    }
+
+    private function copyAndFillTemplateValues($filename, $destination)
+    {
+        $destinationFolder = dirname($destination);
+        if (!file_exists($destinationFolder)) {
+            mkdir($destinationFolder, 0755, true);
+        }
+        $contents = file_get_contents($filename);
+        file_put_contents($destination, $this->fillTemplate($contents));
+    }
 }
