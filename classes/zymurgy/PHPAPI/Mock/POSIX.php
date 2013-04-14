@@ -1,7 +1,7 @@
 <?php
 namespace zymurgy\PHPAPI\Mock;
 
-class POSIX extends Base
+class POSIX extends Base implements \zymurgy\PHPAPI\IPOSIX
 {
 
     public function posix_getuid()

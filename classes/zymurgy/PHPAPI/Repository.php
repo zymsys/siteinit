@@ -15,7 +15,8 @@ class Repository
     public function getPOSIX()
     {
         if (!$this->_POSIX) {
-            $this->_POSIX = new Mock\POSIX();
+            $this->_POSIX = $this->_mock ?
+                new Mock\POSIX() : new Production\POSIX();
         }
         return $this->_POSIX;
     }
@@ -23,7 +24,8 @@ class Repository
     public function getFilesystem()
     {
         if (!$this->_Filesystem) {
-            $this->_Filesystem = new Mock\Filesystem();
+            $this->_Filesystem = $this->_mock ?
+                new Mock\Filesystem() : new Production\Filesystem();
         }
         return $this->_Filesystem;
     }
