@@ -81,4 +81,13 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
             "Apache config for server name");
     }
 
+    public function testMySQLConfig()
+    {
+        //Need to add mysql functions to PHPAPI, and test that config SQL
+        //gets run correctly.
+        //Or I should re-do the whole database portion of this to use PDO.
+        //PDO seems much smarter.
+    }
+
+
 }

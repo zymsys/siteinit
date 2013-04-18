@@ -4,8 +4,9 @@ namespace zymurgy\PHPAPI;
 class Repository
 {
     private $_mock;
-    private $_POSIX;
     private $_Filesystem;
+    private $_POSIX;
+    private $_String;
 
     function __construct($mock = false)
     {
@@ -28,5 +29,14 @@ class Repository
                 new Mock\Filesystem() : new Production\Filesystem();
         }
         return $this->_Filesystem;
+    }
+
+    public function getString()
+    {
+        if (!$this->_String) {
+            $this->_String = $this->_mock ?
+                new Mock\String() : new Production\String();
+        }
+        return $this->_String;
     }
 }

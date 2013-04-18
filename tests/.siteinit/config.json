@@ -1,0 +1,7 @@
+{
+    "mysql": {
+        "host": "localhost",
+        "userName": "root",
+        "password": "tester"
+    }
+}

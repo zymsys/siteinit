@@ -49,7 +49,7 @@ class Worker
 
     private function populateEnvironmentFromInput($variableName, $prompt)
     {
-        echo $prompt;
+        $this->factory->getString()->echoWrapper($prompt);
         $value = $this->factory->getFilesystem()->fgets(STDIN);
         putenv($variableName . '=' . $value);
     }
