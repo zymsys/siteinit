@@ -5,6 +5,7 @@ class Repository
 {
     private $_mock;
     private $_Filesystem;
+    private $_MySQL;
     private $_POSIX;
     private $_String;
 
@@ -38,5 +39,14 @@ class Repository
                 new Mock\String() : new Production\String();
         }
         return $this->_String;
+    }
+
+    public function getMySQL()
+    {
+        if (!$this->_MySQL) {
+            $this->_MySQL = $this->_mock ?
+                new Mock\MySQL() : new Production\MySQL();
+        }
+        return $this->_MySQL;
     }
 }

@@ -28,7 +28,9 @@ class ConfiguratorTest extends PHPUnit_Framework_TestCase
     {
         $configurator = new zymurgy\SiteInit\Configurator();
         $sql = $configurator->buildSetupSQL();
-        $this->assertContains("create database 'user'", $sql,
+        $this->assertTrue(is_array($sql),
+            "Setup SQL is returned as an array");
+        $this->assertContains("create database user", $sql,
             "SQL creates database");
         $this->assertContains("grant all on user.* to 'user'@'localhost' " .
             "identified by 'password'", $sql,

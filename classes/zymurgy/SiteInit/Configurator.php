@@ -47,18 +47,13 @@ class Configurator
 
     public function buildSetupSQL()
     {
-        $sql = $this->fillTemplate(
-            file_get_contents(getenv('HOME') . '/.siteinit/mysql.sql')
-        );
-        $lines = explode(";", $sql);
-        $stripped = array();
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if (!empty($line)) {
-                $stripped[] = $line;
-            }
+        $config = Config::getConfig();
+        $script = $config->mysql->initScript;
+        $filled = array();
+        foreach ($script as $sql) {
+            $filled[] = $this->fillTemplate($sql);
         }
-        return $stripped;
+        return $filled;
     }
 
     private function deploySkeletonPath($path)

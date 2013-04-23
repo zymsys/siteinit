@@ -2,6 +2,10 @@
     "mysql": {
         "host": "localhost",
         "userName": "root",
-        "password": "tester"
+        "password": "tester",
+        "initScript": [
+            "create database {{user}}",
+            "grant all on {{user}}.* to '{{user}}'@'localhost' identified by '{{password}}'"
+        ]
     }
 }

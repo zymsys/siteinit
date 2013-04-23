@@ -83,11 +83,28 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
 
     public function testMySQLConfig()
     {
-        //Need to add mysql functions to PHPAPI, and test that config SQL
-        //gets run correctly.
-        //Or I should re-do the whole database portion of this to use PDO.
-        //PDO seems much smarter.
-    }
+        $phpAPI = new zymurgy\PHPAPI\Repository(true);
+        $worker = new zymurgy\SiteInit\Worker($phpAPI);
+        $worker->setupDatabase(new zymurgy\SiteInit\Configurator());
 
+        $log = $phpAPI->getMySQL()->mockGetLog();
+        $this->assertTrue(isset($log['mysql_connect']),
+            "Logged in with mysql_connect");
+
+        $queries = array();
+        foreach ($log['mysql_query'] as $query) {
+            $queries[] = $query[0];
+        }
+        $this->assertContains(
+            "create database user",
+            $queries,
+            "Created project database"
+        );
+        $this->assertContains(
+            "grant all on user.* to 'user'@'localhost' identified by 'password'",
+            $queries,
+            "Granted permissions on project database"
+        );
+    }
 
 }

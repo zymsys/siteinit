@@ -62,4 +62,18 @@ class Worker
             $configurator->buildApacheConfig()
         );
     }
+
+    public function setupDatabase(Configurator $configurator)
+    {
+        $config = \zymurgy\SiteInit\Config::getConfig();
+        $connection = $this->factory->getMySQL()->mysql_connect(
+            $config->mysql->userName,
+            $config->mysql->password
+        );
+        $script = $configurator->buildSetupSQL();
+        foreach ($script as $sql) {
+            $this->factory->getMySQL()->mysql_query($sql, $connection);
+        }
+        $this->factory->getMySQL()->mysql_close($connection);
+    }
 }
