@@ -6,7 +6,7 @@ class Filesystem implements \zymurgy\PHPAPI\IFilesystem
     public function fopen($filename, $mode, $use_include_path = null,
                           $context = null)
     {
-        return \fopen($filename, $mode, $use_include_path, $context);
+        return call_user_func_array(__FUNCTION__, func_get_args());
     }
 
     function fgets($handle, $length = null)
@@ -16,16 +16,16 @@ class Filesystem implements \zymurgy\PHPAPI\IFilesystem
 
     function file_put_contents($filename, $data, $flags = null, $context = null)
     {
-        return \file_put_contents($filename, $data, $flags, $context);
+        return call_user_func_array(__FUNCTION__, func_get_args());
     }
 
     function fwrite($handle, $string, $length = null)
     {
-        return \fwrite($handle, $string, $length);
+        return call_user_func_array(__FUNCTION__, func_get_args());
     }
 
     function fclose($handle)
     {
-        return \fclose($handle);
+        return call_user_func_array(__FUNCTION__, func_get_args());
     }
 }

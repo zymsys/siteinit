@@ -33,17 +33,17 @@ class Worker
 
     private function populateMissingEnvironment()
     {
-        if (!getenv('TITLE')) {
-            $this->populateEnvironmentFromInput('TITLE', "Title: ");
+        if (!getenv(SiteInit::ENV_TITLE)) {
+            $this->populateEnvironmentFromInput(SiteInit::ENV_TITLE, "Title: ");
         }
-        if (!getenv('HOSTNAME')) {
-            $this->populateEnvironmentFromInput('HOSTNAME', "Host: ");
+        if (!getenv(SiteInit::ENV_HOSTNAME)) {
+            $this->populateEnvironmentFromInput(SiteInit::ENV_HOSTNAME, "Host: ");
         }
-        if (!getenv('USERNAME')) {
-            $this->populateEnvironmentFromInput('USERNAME', "User: ");
+        if (!getenv(SiteInit::ENV_USERNAME)) {
+            $this->populateEnvironmentFromInput(SiteInit::ENV_USERNAME, "User: ");
         }
-        if (!getenv('PASSWORD')) {
-            $this->populateEnvironmentFromInput('PASSWORD', "Password: ");
+        if (!getenv(SiteInit::ENV_PASSWORD)) {
+            $this->populateEnvironmentFromInput(SiteInit::ENV_PASSWORD, "Password: ");
         }
     }
 
@@ -51,7 +51,7 @@ class Worker
     {
         $this->factory->getString()->echoWrapper($prompt);
         $value = $this->factory->getFilesystem()->fgets(STDIN);
-        putenv($variableName . '=' . $value);
+        putenv($variableName . '=' . trim($value));
     }
 
     private function writeApacheConfig(Configurator $configurator)
@@ -63,7 +63,7 @@ class Worker
         }
         $this->factory->getFilesystem()->file_put_contents(
             getenv('HOME') . '/.siteinit/vhosts/' .
-                getenv('HOSTNAME') . '.conf',
+                getenv(SiteInit::ENV_HOSTNAME) . '.conf',
             $configurator->buildApacheConfig()
         );
     }
@@ -88,5 +88,33 @@ class Worker
         $fd = $fs->fopen('/etc/hosts','a');
         $fs->fwrite($fd, $configurator->buildHosts());
         $fs->fclose($fd);
+    }
+
+    private function deploySkeletonPath($path, Configurator $configurator)
+    {
+        $handle = opendir($path);
+        $commonLength = strlen(getenv('HOME') . '/.siteinit/skeleton');
+        while (($entry = readdir($handle)) !== false) {
+            if (($entry === '.') || ($entry === '..')) {
+                continue;
+            }
+            $filename = $path . '/' . $entry;
+            if (is_dir($filename)) {
+                $this->deploySkeletonPath($filename, $configurator);
+            } else if (is_file($filename)) {
+                $destination = getenv('HOME') . '/.siteinit/Sites/' .
+                    getenv(SiteInit::ENV_HOSTNAME) .
+                    substr($filename, $commonLength);
+                $configurator->copyAndFillTemplateValues($filename, $destination);
+            }
+        }
+    }
+
+    public function deploySkeleton(Configurator $configurator)
+    {
+        $this->deploySkeletonPath(
+            getenv('HOME') . '/.siteinit/skeleton',
+            $configurator
+        );
     }
 }

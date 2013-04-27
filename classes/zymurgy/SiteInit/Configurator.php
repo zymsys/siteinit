@@ -8,10 +8,10 @@ class Configurator
     public function __construct()
     {
         $this->_substitutions = array(
-            '{{host}}'     => getenv('HOSTNAME'),
-            '{{title}}'    => getenv('TITLE'),
-            '{{user}}'     => getenv('USERNAME'),
-            '{{password}}' => getenv('PASSWORD'),
+            '{{host}}'     => getenv(SiteInit::ENV_HOSTNAME),
+            '{{title}}'    => getenv(SiteInit::ENV_TITLE),
+            '{{user}}'     => getenv(SiteInit::ENV_USERNAME),
+            '{{password}}' => getenv(SiteInit::ENV_PASSWORD),
         );
     }
 
@@ -56,31 +56,7 @@ class Configurator
         return $filled;
     }
 
-    private function deploySkeletonPath($path)
-    {
-        $handle = opendir($path);
-        $commonLength = strlen(getenv('HOME') . '/.siteinit/skeleton');
-        while (($entry = readdir($handle)) !== false) {
-            if (($entry === '.') || ($entry === '..')) {
-                continue;
-            }
-            $filename = $path . '/' . $entry;
-            if (is_dir($filename)) {
-                $this->deploySkeletonPath($filename);
-            } else if (is_file($filename)) {
-                $destination = getenv('HOME') . '/.siteinit/Sites/' .
-                    getenv('HOSTNAME') . substr($filename, $commonLength);
-                $this->copyAndFillTemplateValues($filename, $destination);
-            }
-        }
-    }
-
-    public function deploySkeleton()
-    {
-        $this->deploySkeletonPath(getenv('HOME') . '/.siteinit/skeleton');
-    }
-
-    private function copyAndFillTemplateValues($filename, $destination)
+    public function copyAndFillTemplateValues($filename, $destination)
     {
         $destinationFolder = dirname($destination);
         if (!file_exists($destinationFolder)) {

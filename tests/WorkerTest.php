@@ -54,23 +54,35 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
             ))
         );
         //Delete environment variables
-        putenv('TITLE');
-        putenv('HOSTNAME');
-        putenv('USERNAME');
-        putenv('PASSWORD');
+        putenv(\zymurgy\SiteInit\SiteInit::ENV_TITLE);
+        putenv(\zymurgy\SiteInit\SiteInit::ENV_HOSTNAME);
+        putenv(\zymurgy\SiteInit\SiteInit::ENV_USERNAME);
+        putenv(\zymurgy\SiteInit\SiteInit::ENV_PASSWORD);
         $worker = new zymurgy\SiteInit\Worker($phpAPI);
         $worker->writeSite();
         $log = $phpAPI->getFilesystem()->mockGetLog();
         $this->assertTrue(isset($log['fopen']),
             "Files were opened when writing the site");
-        $this->assertEquals($expectedTitle, getenv('TITLE'),
-            "Asks for and sets title");
-        $this->assertEquals($expectedHost, getenv('HOSTNAME'),
-            "Asks for and sets host");
-        $this->assertEquals($expectedUserName, getenv('USERNAME'),
-            "Asks for and sets user name");
-        $this->assertEquals($expectedPassword, getenv('PASSWORD'),
-            "Asks for and sets password");
+        $this->assertEquals(
+            $expectedTitle,
+            getenv(\zymurgy\SiteInit\SiteInit::ENV_TITLE),
+            "Asks for and sets title"
+        );
+        $this->assertEquals(
+            $expectedHost,
+            getenv(\zymurgy\SiteInit\SiteInit::ENV_HOSTNAME),
+            "Asks for and sets host"
+        );
+        $this->assertEquals(
+            $expectedUserName,
+            getenv(\zymurgy\SiteInit\SiteInit::ENV_USERNAME),
+            "Asks for and sets user name"
+        );
+        $this->assertEquals(
+            $expectedPassword,
+            getenv(\zymurgy\SiteInit\SiteInit::ENV_PASSWORD),
+            "Asks for and sets password"
+        );
     }
 
     public function testWriteApacheConfig()
@@ -175,4 +187,28 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
             "writeSite threw an error for the wrong vhost file type"
         );
     }
+
+    public function testSkeleton()
+    {
+        system("rm -rf " . getenv('HOME') . "/.siteinit/Sites/host");
+        system("chmod 600 .siteinit/skeleton/test.php");
+        $testFile = '.siteinit/Sites/host/test.php';
+        $nestedFile = '.siteinit/Sites/host/folder/nested.php';
+        $phpAPI = new \zymurgy\PHPAPI\Repository(true);
+        $worker = new \zymurgy\SiteInit\Worker($phpAPI);
+        $configurator = new \zymurgy\SiteInit\Configurator();
+        $worker->deploySkeleton($configurator);
+        $this->assertTrue(file_exists($testFile), "Test file exists");
+        $this->assertTrue(file_exists($nestedFile), "Nested file exists");
+        $testContents = file_get_contents($testFile);
+        $nestedContents = file_get_contents($nestedFile);
+        $this->assertContains("\$userName = 'user';", $testContents,
+            "Template substitutions work in test file.");
+        $this->assertContains("\$password = 'password';", $nestedContents,
+            "Template substitutions work in nested file.");
+        $meta = stat($testFile);
+        $this->assertEquals(0600, $meta['mode'] & 0777,
+            "Deployed file matches source permissions");
+    }
+
 }

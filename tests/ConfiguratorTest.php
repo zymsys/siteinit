@@ -1,9 +1,9 @@
 <?php
 
-putenv('HOSTNAME=host');
-putenv('USERNAME=user');
-putenv('PASSWORD=password');
-putenv('TITLE=Test Title');
+putenv(\zymurgy\SiteInit\SiteInit::ENV_HOSTNAME . '=host');
+putenv(\zymurgy\SiteInit\SiteInit::ENV_USERNAME . '=user');
+putenv(\zymurgy\SiteInit\SiteInit::ENV_PASSWORD . '=password');
+putenv(\zymurgy\SiteInit\SiteInit::ENV_TITLE    . '=Test Title');
 putenv('HOME=' . __DIR__);
 
 require_once('../bootstrap.php');
@@ -35,27 +35,6 @@ class ConfiguratorTest extends PHPUnit_Framework_TestCase
         $this->assertContains("grant all on user.* to 'user'@'localhost' " .
             "identified by 'password'", $sql,
             "SQL grants rights");
-    }
-
-    public function testSkeleton()
-    {
-        system("rm -rf " . getenv('HOME') . "/.siteinit/Sites/host");
-        system("chmod 600 .siteinit/skeleton/test.php");
-        $testFile = '.siteinit/Sites/host/test.php';
-        $nestedFile = '.siteinit/Sites/host/folder/nested.php';
-        $configurator = new zymurgy\SiteInit\Configurator();
-        $configurator->deploySkeleton();
-        $this->assertTrue(file_exists($testFile), "Test file exists");
-        $this->assertTrue(file_exists($nestedFile), "Nested file exists");
-        $testContents = file_get_contents($testFile);
-        $nestedContents = file_get_contents($nestedFile);
-        $this->assertContains("\$userName = 'user';", $testContents,
-            "Template substitutions work in test file.");
-        $this->assertContains("\$password = 'password';", $nestedContents,
-            "Template substitutions work in nested file.");
-        $meta = stat($testFile);
-        $this->assertEquals(0600, $meta['mode'] & 0777,
-            "Deployed file matches source permissions");
     }
 
     public function testHosts()
