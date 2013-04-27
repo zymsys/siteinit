@@ -124,8 +124,9 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
     public function testMySQLConfig()
     {
         $phpAPI = new zymurgy\PHPAPI\Repository(true);
+        $phpAPI->getPOSIX()->mockSetReturn('posix_getuid', 0);
         $worker = new zymurgy\SiteInit\Worker($phpAPI);
-        $worker->setupDatabase(new zymurgy\SiteInit\Configurator());
+        $worker->writeSite();
 
         $log = $phpAPI->getMySQL()->mockGetLog();
         $this->assertTrue(isset($log['mysql_connect']),

@@ -20,6 +20,7 @@ class Worker
         $configurator = new Configurator();
         $this->writeApacheConfig($configurator);
         $this->writeEtcHosts($configurator);
+        $this->setupDatabase($configurator);
     }
 
     private function checkIsRoot()
