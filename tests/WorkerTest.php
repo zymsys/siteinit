@@ -7,6 +7,7 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
     protected function setUp()
     {
         $link = getenv('HOME') . '/.siteinit/vhosts';
+        @unlink($link);
         @symlink('.', $link);
     }
 
@@ -154,4 +155,24 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
         );
     }
 
+    public function testVhostsSymlinkSanityCheck_Wrong()
+    {
+        $link = getenv('HOME') . '/.siteinit/vhosts';
+        @unlink($link);
+        file_put_contents($link, "Not a symlink!");
+        $phpAPI = new \zymurgy\PHPAPI\Repository(true);
+        $phpAPI->getPOSIX()->mockSetReturn('posix_getuid', 0);
+        $worker = new \zymurgy\SiteInit\Worker($phpAPI);
+        $configurator = new \zymurgy\SiteInit\Configurator();
+        $thrown = false;
+        try {
+            $worker->writeSite($configurator);
+        } catch (Exception $e) {
+            $thrown = true;
+        }
+        $this->assertTrue(
+            $thrown,
+            "writeSite threw an error for the wrong vhost file type"
+        );
+    }
 }

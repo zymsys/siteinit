@@ -56,8 +56,7 @@ class Worker
 
     private function writeApacheConfig(Configurator $configurator)
     {
-        $info = @stat(getenv('HOME') . '/.siteinit/vhosts');
-        if (!$info) {
+        if (!is_link(getenv('HOME') . '/.siteinit/vhosts')) {
             throw new \Exception(
                 "No .siteinit/vhosts symlink to the vhosts folder"
             );
