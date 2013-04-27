@@ -6,25 +6,16 @@ class MySQL implements \zymurgy\PHPAPI\IMySQL
     function mysql_connect($server = null, $username = null, $password = null,
                            $new_link = false, $client_flags = 0)
     {
-        if (!$server) $server = ini_get("mysql.default_host");
-        if (!$username) $username = ini_get("mysql.default_user");
-        if (!$password) $password = ini_get("mysql.default_password");
-        return mysql_connect(
-            $server,
-            $username,
-            $password,
-            $new_link,
-            $client_flags
-        );
+        return call_user_func_array(__FUNCTION__, func_get_args());
     }
 
     function mysql_query($query, $link_identifier = null)
     {
-        return mysql_query($query, $link_identifier);
+        return call_user_func_array(__FUNCTION__, func_get_args());
     }
 
     function mysql_close($link_identifier = null)
     {
-        return mysql_close($link_identifier);
+        return call_user_func_array(__FUNCTION__, func_get_args());
     }
 }

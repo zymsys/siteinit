@@ -73,6 +73,7 @@ class Worker
     {
         $config = \zymurgy\SiteInit\Config::getConfig();
         $connection = $this->factory->getMySQL()->mysql_connect(
+            $config->mysql->host,
             $config->mysql->userName,
             $config->mysql->password
         );
