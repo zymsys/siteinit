@@ -4,6 +4,12 @@ require_once('../bootstrap.php');
 putenv('HOME=' . __DIR__);
 
 class WorkerTest extends PHPUnit_Framework_TestCase {
+    protected function setUp()
+    {
+        $link = getenv('HOME') . '/.siteinit/vhosts';
+        @symlink('.', $link);
+    }
+
     public function testWriteSite()
     {
         $phpAPI = new zymurgy\PHPAPI\Repository(true);
@@ -125,6 +131,26 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
             "grant all on user.* to 'user'@'localhost' identified by 'password'",
             $queries,
             "Granted permissions on project database"
+        );
+    }
+
+    public function testVhostsSymlinkSanityCheck_Missing()
+    {
+        $link = getenv('HOME') . '/.siteinit/vhosts';
+        @unlink($link);
+        $phpAPI = new \zymurgy\PHPAPI\Repository(true);
+        $phpAPI->getPOSIX()->mockSetReturn('posix_getuid', 0);
+        $worker = new \zymurgy\SiteInit\Worker($phpAPI);
+        $configurator = new \zymurgy\SiteInit\Configurator();
+        $thrown = false;
+        try {
+            $worker->writeSite($configurator);
+        } catch (Exception $e) {
+            $thrown = true;
+        }
+        $this->assertTrue(
+            $thrown,
+            "writeSite threw an error for the missing vhost link"
         );
     }
 
