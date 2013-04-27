@@ -19,7 +19,7 @@ class Worker
         $this->populateMissingEnvironment();
         $configurator = new Configurator();
         $this->writeApacheConfig($configurator);
-        $this->factory->getFilesystem()->fopen('/etc/hosts','a');
+        $this->writeEtcHosts($configurator);
     }
 
     private function checkIsRoot()
@@ -75,5 +75,13 @@ class Worker
             $this->factory->getMySQL()->mysql_query($sql, $connection);
         }
         $this->factory->getMySQL()->mysql_close($connection);
+    }
+
+    private function writeEtcHosts(Configurator $configurator)
+    {
+        $fs = $this->factory->getFilesystem();
+        $fd = $fs->fopen('/etc/hosts','a');
+        $fs->fwrite($fd, $configurator->buildHosts());
+        $fs->fclose($fd);
     }
 }

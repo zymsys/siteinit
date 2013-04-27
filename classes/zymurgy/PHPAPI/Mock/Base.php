@@ -31,6 +31,26 @@ class Base
         return $this->_log;
     }
 
+    public function mockSearchLog($functionName, $parameterNumber, $value)
+    {
+        if (!isset($this->_log[$functionName])) return false;
+        $result = array();
+        foreach ($this->_log[$functionName] as $entry) {
+            if (isset($entry[$parameterNumber]) &&
+                ($entry[$parameterNumber] === $value)) {
+                $result[] = $entry;
+            }
+        }
+        return $result;
+    }
+
+    public function mockSearchLogOne($functionName, $parameterNumber, $value)
+    {
+        if (!isset($this->_log[$functionName])) return false;
+        $result = $this->mockSearchLog($functionName, $parameterNumber, $value);
+        return isset($result[0]) ? $result[0] : false;
+    }
+
     protected function mockLog($method, $args)
     {
         if (!isset($this->_log[$method])) {
@@ -39,6 +59,9 @@ class Base
         $this->_log[$method][] = $args;
     }
 
+    /**
+     * @return \zymurgy\PHPAPI\MockFileHandle[]
+     */
     public function mockGetFiles()
     {
         return $this->_files;

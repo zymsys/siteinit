@@ -4,7 +4,7 @@ require_once('../bootstrap.php');
 putenv('HOME=' . __DIR__);
 
 class WorkerTest extends PHPUnit_Framework_TestCase {
-    public function testMustRunAsRootSuccess()
+    public function testWriteSite()
     {
         $phpAPI = new zymurgy\PHPAPI\Repository(true);
         $phpAPI->getPOSIX()->mockSetReturn('posix_getuid', 0);
@@ -79,6 +79,27 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
         //Not testing all contents since configurator tests test contents.
         $this->assertContains('ServerName host.local', $fs[$filename]->contents,
             "Apache config for server name");
+    }
+
+    public function testWriteEtcHosts()
+    {
+        $phpAPI = new zymurgy\PHPAPI\Repository(true);
+        $phpAPI->getPOSIX()->mockSetReturn('posix_getuid', 0);
+        $worker = new zymurgy\SiteInit\Worker($phpAPI);
+        $worker->writeSite();
+        $mfs = $phpAPI->getFilesystem();
+        $log = $mfs->mockGetLog();
+        $this->assertTrue(isset($log['fopen']),
+            "Worker called fopen()");
+        $etcHostsOpenParams = $mfs->mockSearchLogOne('fopen', 0, '/etc/hosts');
+        $this->assertTrue(isset($etcHostsOpenParams[1]),
+            "Worker sent 2nd parameter to fopen");
+        $this->assertEquals('a', $etcHostsOpenParams[1],
+            "Worker opened /etc/hosts for append");
+        $fs = $mfs->mockGetFiles();
+        $this->assertTrue(isset($fs['/etc/hosts']),
+            "Worker wrote to /etc/hosts");
+        $this->assertNotEmpty($fs['/etc/hosts']->contents);
     }
 
     public function testMySQLConfig()
