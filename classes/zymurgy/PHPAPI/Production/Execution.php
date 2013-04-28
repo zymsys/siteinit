@@ -1,7 +1,7 @@
 <?php
 namespace zymurgy\PHPAPI\Production;
 
-class POSIX implements \zymurgy\PHPAPI\IExecution
+class Execution implements \zymurgy\PHPAPI\IExecution
 {
     function system($command, &$return_var = null)
     {
