@@ -8,4 +8,5 @@ interface IFilesystem
     function file_put_contents($filename, $data, $flags = null, $context = null);
     function fwrite($handle, $string, $length = null);
     function fclose($handle);
+    function file_exists($filename);
 }

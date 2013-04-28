@@ -18,9 +18,11 @@ class Worker
         $this->checkIsRoot();
         $this->populateMissingEnvironment();
         $configurator = new Configurator();
+        $this->deploySkeleton($configurator);
         $this->writeApacheConfig($configurator);
         $this->writeEtcHosts($configurator);
         $this->setupDatabase($configurator);
+        $this->finalize();
     }
 
     private function checkIsRoot()
@@ -118,5 +120,13 @@ class Worker
             getenv('HOME') . '/.siteinit/skeleton',
             $configurator
         );
+    }
+
+    private function finalize()
+    {
+        $script = getenv('HOME') . '/.siteinit/finalize.sh';
+        if ($this->factory->getFilesystem()->file_exists($script)) {
+            $this->factory->getExecution()->system($script);
+        }
     }
 }

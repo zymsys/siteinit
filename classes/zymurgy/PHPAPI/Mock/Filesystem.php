@@ -64,4 +64,14 @@ class Filesystem extends Base implements \zymurgy\PHPAPI\IFilesystem
         }
         return true;
     }
+
+    function file_exists($filename)
+    {
+        $this->mockLog(__FUNCTION__, func_get_args());
+        if ($this->hasMockReturn(__FUNCTION__)) {
+            return $this->getMockReturn(__FUNCTION__, func_get_args());
+        }
+        $fs = $this->mockGetFiles();
+        return isset($fs[$filename]);
+    }
 }

@@ -8,6 +8,7 @@ class Repository
     private $_MySQL;
     private $_POSIX;
     private $_String;
+    private $_Execution;
 
     function __construct($mock = false)
     {
@@ -48,5 +49,14 @@ class Repository
                 new Mock\MySQL() : new Production\MySQL();
         }
         return $this->_MySQL;
+    }
+
+    public function getExecution()
+    {
+        if (!$this->_Execution) {
+            $this->_Execution = $this->_mock ?
+                new Mock\Execution() : new Production\Execution();
+        }
+        return $this->_Execution;
     }
 }

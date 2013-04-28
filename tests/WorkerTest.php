@@ -196,9 +196,9 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
         $testFile = '.siteinit/Sites/host/test.php';
         $nestedFile = '.siteinit/Sites/host/folder/nested.php';
         $phpAPI = new \zymurgy\PHPAPI\Repository(true);
+        $phpAPI->getPOSIX()->mockSetReturn('posix_getuid', 0);
         $worker = new \zymurgy\SiteInit\Worker($phpAPI);
-        $configurator = new \zymurgy\SiteInit\Configurator();
-        $worker->deploySkeleton($configurator);
+        $worker->writeSite();
         $this->assertTrue(file_exists($testFile), "Test file exists");
         $this->assertTrue(file_exists($nestedFile), "Nested file exists");
         $testContents = file_get_contents($testFile);
@@ -210,6 +210,18 @@ class WorkerTest extends PHPUnit_Framework_TestCase {
         $meta = stat($testFile);
         $this->assertEquals(0600, $meta['mode'] & 0777,
             "Deployed file matches source permissions");
+    }
+
+    public function testFinalize()
+    {
+        $phpAPI = new \zymurgy\PHPAPI\Repository(true);
+        $phpAPI->getPOSIX()->mockSetReturn('posix_getuid', 0);
+        $phpAPI->getFilesystem()->mockSetReturn('file_exists', true);
+        $worker = new \zymurgy\SiteInit\Worker($phpAPI);
+        $worker->writeSite();
+        $log = $phpAPI->getExecution()->mockGetLog();
+        $this->assertTrue(isset($log['system']),
+            "Ran finalize script");
     }
 
 }
