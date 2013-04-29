@@ -25,7 +25,7 @@ Note two things... The authentication information here has to be for an account 
 5. Create a skeleton folder, and fill it with any files you want to pre-populate the sites created with this tool. The following tokens will be populated from their corresponding environment variables: {{host}} -> SI_HOSTNAME, {{title}} -> SI_TITLE, {{user}} -> SI_USERNAME and {{password}} -> SI_PASSWORD.  You may want to create a composer.json file here, or create a default .gitignore or other things like that.
 6. Create a templete for additions to the hosts file to resolve the development host name to your development machine. The template is in ~/.siteinit/hosts.
 7. (optional) Create a finalize.sh to complete the installation. This is run after everything else and has access to the SI_* environment variables. I use this to reload the Apache config and chown the files back to myself since siteinit has to run as root.
-8. (optional) Run buildPhar.php to create siteinit.phar, turn on its executable bit, and copy it somewhere in your path.
+8. (optional) Run buildPhar.php to create siteinit.phar, turn on its executable bit, and copy it somewhere in your path. You'll want to make sure that your php.ini sets phar.readonly = Off or it won't be able to write the file.
 
 For example, so set up siteinit on my desktop after cloning the repository into ~/prog I might do the following:
 
